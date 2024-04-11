@@ -20,13 +20,16 @@ CLOSED_IN_NOTION = "notion:closed"
 
 def load_config():
     """Load configuration"""
-    envfile = Path(__file__).parent.parent / ".env"
-    if envfile.exists():
-        dotenv.load_dotenv()
-        return
-    logging.info(f"{envfile} does not exists. Searching for global...")
-    with (Path.home() / ".config" / "gino. / "env").open("r") as f:
-        dotenv.load_dotenv(stream=f)
+    envfiles = [
+        Path(__file__).parent.parent / ".env",
+        Path.home() / ".config" / "gino" / "env"
+    ]
+    for envfile in envfiles:
+        if envfile.exists():
+            dotenv.load_dotenv()
+            return
+
+    raise RuntimeError(f"At least of these these env file is required: {envfiles}")
 
 
 def get_config(key: str) -> str:
@@ -73,11 +76,13 @@ def shelve_it(file_name, expiry_mins=10):
     return decorator
 
 
-STORE_NAME = 'gino.shelve'
+STORE_NAME = "gino.shelve"
+
 
 def store(key, val):
     with shelve.open(STORE_NAME) as db:
         db[key] = val
+
 
 def load(key):
     with shelve.open(STORE_NAME) as db:
