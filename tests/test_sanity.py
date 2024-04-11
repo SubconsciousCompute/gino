@@ -1,12 +1,12 @@
-def tcmoest_imports():
+def tgino.st_imports():
     import cmo
-    print(dir(cmo))
+    print(dir(gino.)
 
-    import cmo.metric
+    import gino.metric
 
 
-    print(dir(cmo.metric))
-    assert "available_metrics" in dir(cmo.metric)
+    print(dir(gino.metric))
+    assert "available_metrics" in dir(gino.metric)
 
 
 def test_foo():

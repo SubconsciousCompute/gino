@@ -13,7 +13,7 @@ from validators.uuid import uuid as is_uuid
 
 from notion_client import Client
 
-import cmo.common
+import gino.common
 
 import typer
 
@@ -34,7 +34,7 @@ def client():
     global NOTION
     if NOTION is not None:
         return NOTION
-    cmo.common.load_config()
+    gino.common.load_config()
     api_key = os.environ["NOTION_ACCESS_TOKEN"]
     NOTION = Client(auth=api_key)
     return NOTION
@@ -99,7 +99,7 @@ def create_task(
     gitlab_data=None,
 ):
     shelve_key = f"{url}-{title}"
-    if cmo.common.load(shelve_key) is not None:
+    if gino.common.load(shelve_key) is not None:
         logging.debug("Page already exists in notion. Doing nothing")
         return
 
@@ -137,7 +137,7 @@ def create_task(
     page = client().pages.create(parent={"database_id": db_id()}, properties=params)
 
     # if page is created successful, write to the global keyval store.
-    cmo.common.store(shelve_key, 1)
+    gino.common.store(shelve_key, 1)
 
     return page
 
@@ -217,9 +217,9 @@ def blocks_to_markdown(blocks) -> str:
 @app.command("sync-blocks")
 def sync_recently_added_blocks():
     """find pages that were modified in last INTER_RUN_INTERVAL_SEC"""
-    mmin = cmo.common.INTER_RUN_INTERVAL_SEC
+    mmin = gino.common.INTER_RUN_INTERVAL_SEC
     notion = client()
-    edited_after = cmo.common.now_utc() - timedelta(minutes=mmin)
+    edited_after = gino.common.now_utc() - timedelta(minutes=mmin)
     data = dict(
         filter=dict(
             property="Last edited time", date=dict(after=edited_after.isoformat())
@@ -235,13 +235,13 @@ def sync_recently_added_blocks_page(page_uuid, page=None):
     that we only process the blocks that were added within the
     INTER_RUN_INTERVAL_SEC.
     """
-    mmin = cmo.common.INTER_RUN_INTERVAL_SEC / 60
+    mmin = gino.common.INTER_RUN_INTERVAL_SEC / 60
     _uuid = str(uuid.UUID(page_uuid))
     notion = client()
     blocks = []
     markdown = ""
     for block in notion.blocks.children.list(_uuid).get("results"):
-        mins_from_now = cmo.common.from_now_mins(block["created_time"])
+        mins_from_now = gino.common.from_now_mins(block["created_time"])
         if mins_from_now < mmin:
             if ":from-gitlab:" in str(block):
                 continue
@@ -253,7 +253,7 @@ def sync_recently_added_blocks_page(page_uuid, page=None):
     markdown = blocks_to_markdown(blocks)
     if len(markdown.strip()) > 3:
         try:
-            issue = cmo.gitlab.get_issue_by_url(issue_url)
+            issue = gino.gitlab.get_issue_by_url(issue_url)
             issue.notes.create(dict(body=f"_from:notion_: <{page_url}>" + markdown))
         except Exception as e:
             logging.debug(e)

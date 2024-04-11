@@ -9,9 +9,9 @@ import gitlab
 import typer
 from urlextract import URLExtract
 
-import cmo.notion
-from cmo.common import parse_date, load_config, get_config, shelve_it
-from cmo.common import WAITING_FOR_TRIAGE, LINKED_WITH_NOTION, CLOSED_IN_NOTION
+import gino.notion
+from gino.common import parse_date, load_config, get_config, shelve_it
+from gino.common import WAITING_FOR_TRIAGE, LINKED_WITH_NOTION, CLOSED_IN_NOTION
 
 app = typer.Typer()
 
@@ -76,7 +76,7 @@ def link_newly_created_issues_with_notion(project, created_before_mins: int = 72
         author = issue.author["username"]
         page_date = str(issue.due_date) if issue.due_date else None
         assignee = issue.assignees[0]["username"] if issue.assignees else None
-        if page := cmo.notion.create_task(
+        if page := gino.notion.create_task(
             page_title,
             url,
             due_date=page_date,
@@ -86,7 +86,7 @@ def link_newly_created_issues_with_notion(project, created_before_mins: int = 72
         ):
             # adds tag to issue that I have created the issue on the notion
             text = f"""{issue.description}. By {issue.author}."""
-            cmo.notion.append_to_page(page["id"], text)
+            gino.notion.append_to_page(page["id"], text)
             issue.labels = issue.labels + [label]
             issue.notes.create(
                 dict(body="More information may be found at " + page["url"])
@@ -124,7 +124,7 @@ def sync_notes(project):
         notion_page_uuid = find_notion_page_uuid(issue)
         logging.info(f"Adding notes from {issue.title}")
         for note in issue.notes.list(updated_before=updated_before):
-            if note.author["username"] == "cmo-bot":
+            if note.author["username"] == "gino.bot":
                 continue
             body = note.body
             if body.endswith(LINKED_WITH_NOTION):
@@ -133,7 +133,7 @@ def sync_notes(project):
 
             try:
                 text = f"{body}. By {note.author['username']}. On {note.created_at}."
-                cmo.notion.append_to_page(notion_page_uuid, text)
+                gino.notion.append_to_page(notion_page_uuid, text)
                 note.body += f"\n\n{LINKED_WITH_NOTION}"
                 note.save()
             except Exception as e:
@@ -175,7 +175,7 @@ def change_notion_task_status(issue):
     notion_page_uuid = find_notion_page_uuid(issue)
     if notion_page_uuid:
         logging.info(f">Updating {notion_page_uuid} status to {notion_status}")
-        cmo.notion.change_page_status(notion_page_uuid, notion_status)
+        gino.notion.change_page_status(notion_page_uuid, notion_status)
         issue.notes.create(dict(body="Changed status of linked notion page"))
         issue.labels += [CLOSED_IN_NOTION]
         issue.save()

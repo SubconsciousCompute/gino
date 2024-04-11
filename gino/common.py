@@ -25,7 +25,7 @@ def load_config():
         dotenv.load_dotenv()
         return
     logging.info(f"{envfile} does not exists. Searching for global...")
-    with (Path.home() / ".config" / "cmo" / "env").open("r") as f:
+    with (Path.home() / ".config" / "gino. / "env").open("r") as f:
         dotenv.load_dotenv(stream=f)
 
 
@@ -73,7 +73,7 @@ def shelve_it(file_name, expiry_mins=10):
     return decorator
 
 
-STORE_NAME = 'cmo.shelve'
+STORE_NAME = 'gino.shelve'
 
 def store(key, val):
     with shelve.open(STORE_NAME) as db:

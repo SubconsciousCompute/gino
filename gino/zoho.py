@@ -6,7 +6,7 @@ import typer
 import requests
 
 
-from cmo.common import load_config
+from gino.common import load_config
 
 app = typer.Typer()
 
