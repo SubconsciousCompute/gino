@@ -24,6 +24,7 @@ test: build
 	poetry run pytest -s tests/*.py
 
 run:
+	poetry install
 	poetry run gino run-once
 
 ci: build test

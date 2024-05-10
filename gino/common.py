@@ -7,6 +7,8 @@ import time
 
 from datetime import datetime, timezone
 import dateparser
+
+# pip install python-dotenv
 import dotenv
 
 logger = logging.getLogger()

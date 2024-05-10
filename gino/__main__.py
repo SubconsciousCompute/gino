@@ -6,7 +6,6 @@ import datetime
 
 import gino.gitlab
 import gino.notion
-import gino.zoho
 
 from gino.common import logger
 
@@ -15,7 +14,6 @@ import typer
 app = typer.Typer()
 app.add_typer(gino.gitlab.app, name="gitlab")
 app.add_typer(gino.notion.app, name="notion")
-app.add_typer(gino.zoho.app, name="zoho")
 
 
 def read_projects():
