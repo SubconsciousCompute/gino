@@ -24,11 +24,12 @@ def load_config():
     """Load configuration"""
     envfiles = [
         Path(__file__).parent.parent / ".env",
-        Path.home() / ".config" / "gino" / "env"
+        Path.home() / ".config" / "gino" / "env",
     ]
     for envfile in envfiles:
         if envfile.exists():
-            dotenv.load_dotenv()
+            logging.info(f"Reading env from {envfile}")
+            dotenv.load_dotenv(envfile)
             return
 
     raise RuntimeError(f"At least of these these env file is required: {envfiles}")
@@ -36,6 +37,9 @@ def load_config():
 
 def get_config(key: str) -> str:
     """Get configuration for a given key"""
+    if key not in os.environ:
+        logging.warn(f"Key {key} not found in env variable. Reloading config...")
+        load_config()
     return os.environ[key]
 
 
