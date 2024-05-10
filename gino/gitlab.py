@@ -184,8 +184,8 @@ def change_notion_task_status(issue):
 
 
 def close_issues_due_to_inactivity(project):
-    """Close issue if there is no activity on it for 6 months"""
-    updated_before = datetime.now(timezone.utc) - timedelta(days=180)
+    """Close issue if there is no activity on it for 3 months"""
+    updated_before = datetime.now(timezone.utc) - timedelta(days=90)
     label = "closed-due-to-inactivity"
     for issue in project.issues.list(
         state="opened",

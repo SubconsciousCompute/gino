@@ -29,7 +29,7 @@ def sync_newly_created_issues_with_notion(project):
     if isinstance(project, str):
         project = gino.gitlab.get_project(project)
     logger.debug(f"Syncing new issues with notion {project.name_with_namespace}")
-    gino.gitlab.link_newly_created_issues_with_notion(project)
+    gino.gitlab.link_newly_created_issues_with_notion(project, 7 * 24 * 60)
 
 
 @app.command("sync-closed")
