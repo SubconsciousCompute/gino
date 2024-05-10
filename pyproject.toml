@@ -20,6 +20,7 @@ python-gitlab = "^4.4.0"
 urlextract = "^1.9.0"
 validators = "^0.28.1"
 notion-client = "^2.2.1"
+notion2markdown = "^0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
