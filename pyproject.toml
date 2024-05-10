@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "gino"
+version = "0.3.0"
+description = "Gitlab <-> Notion"
+authors = ["Dilawar Singh <dilawar@subcom.tech>"]
+license = "AGPL"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
